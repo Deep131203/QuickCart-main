@@ -18,9 +18,10 @@ export async function POST(request) {
 
         }
 
-        const amount  =  await items.reduce(async(accessedDynamicData, item)=> {
+        const amount  =  await items.reduce(async(acc, item)=> {
             const product = await Product.findById(item.product);
-            return acc + product.offerPrice * item.quantity;
+            const prev = await acc;
+            return prev + product.offerPrice * item.quantity;
         }, 0);
 
         await inngest.send({
@@ -36,7 +37,7 @@ export async function POST(request) {
 
         //clear user cart
 
-        const user = await User.fiindById(userId);
+        const user = await User.findById(userId);
         user.cartItems = {};
         await user.save();
 
